@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- SEO & Metadata -->
+    <title>Smart Home Loan EMI Calculator India | Prepayment & Savings Planner</title>
+    <meta name="description" content="Calculate Home Loan EMI, plan prepayments, and save lakhs in interest. Professional Indian Home Loan Calculator with tenure reduction and monthly amortization schedule. Free tool for SBI, HDFC, ICICI loans.">
+    <meta name="keywords" content="Home Loan Calculator, EMI Calculator India, Home Loan Prepayment Calculator, Housing Loan Interest Saver, Reduce Loan Tenure, SBI Home Loan Calculator, HDFC EMI Calculator">
+    <meta name="author" content="Vivek Narkhede">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-username.github.io/repo-name/">
+    <meta property="og:title" content="Smart Home Loan EMI Calculator with Prepayment">
+    <meta property="og:description" content="Visualize your loan, plan part-payments, and see how much interest you can save. Free, fast, and mobile-friendly.">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FinancialProduct",
+      "name": "Home Loan Calculator",
+      "description": "A comprehensive tool to calculate Home Loan EMIs and Prepayment savings.",
+      "brand": {
+        "@type": "Person",
+        "name": "Vivek Narkhede"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Home Buyers"
+      }
+    }
+    </script>
+
+    <!-- External Assets -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Professional Google Fonts: Plus Jakarta Sans (Headings) & Inter (UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Professional Fintech Palette */
+            --primary: #2563eb;       /* Royal Blue */
+            --primary-dark: #1e40af;  /* Deep Blue */
+            --primary-light: #eff6ff; /* Light Blue Bg */
+            
+            --text-main: #0f172a;     /* Slate 900 */
+            --text-muted: #64748b;    /* Slate 500 */
+            
+            --success: #10b981;       /* Emerald */
+            --success-bg: #ecfdf5;
+            
+            --surface: #ffffff;
+            --bg-body: #f8fafc;
+            
+            --border: #e2e8f0;
+            
+            /* Modern Shadows */
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            
+            --radius-xl: 20px;
+            --radius-md: 12px;
+            
+            --font-heading: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: var(--font-body);
+            background-color: var(--bg-body);
+            /* Subtle mesh gradient background */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* --- Header --- */
+        header { 
+            text-align: center; 
+            padding: 50px 0 40px; 
+        }
+        
+        .logo-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        header h1 { 
+            font-family: var(--font-heading);
+            font-size: 2.75rem; 
+            font-weight: 800; 
+            color: var(--text-main);
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        header p { color: var(--text-muted); font-size: 1.125rem; max-width: 500px; margin: 0 auto; }
+
+        /* --- Layout --- */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-card);
+            padding: 32px;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .card:hover { box-shadow: var(--shadow-hover); }
+
+        /* --- Input Styles --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .section-header i { 
+            font-size: 1.25rem; 
+            color: var(--primary); 
+        }
+        
+        .section-header h2 { 
+            font-family: var(--font-heading);
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: var(--text-main);
+        }
+
+        .input-group { margin-bottom: 28px; }
+        
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .input-label-row label { 
+            font-weight: 600; 
+            color: var(--text-main); 
+            font-size: 0.95rem; 
+        }
+
+        .input-box-wrapper {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 4px 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .input-box-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        
+        .currency-symbol { font-weight: 600; color: var(--text-muted); font-size: 1.1rem; }
+        
+        .number-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 12px 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            text-align: right;
+            font-family: var(--font-body);
+        }
+
+        /* Sleek Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            outline: none;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        /* --- Prepayment Section --- */
+        .prepayment-card {
+            background: var(--primary-light);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .toggle-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-family: var(--font-heading);
+        }
+
+        .toggle-content {
+            display: none;
+            margin-top: 20px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .strategy-selector {
+            display: flex;
+            background: rgba(255,255,255,0.7);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .strategy-opt {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        
+        .strategy-opt.active { 
+            background: #fff; 
+            color: var(--primary); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* --- Results Section --- */
+        .result-highlight {
+            background: var(--text-main); /* Dark Slate */
+            color: white;
+            padding: 32px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+        }
+        
+        .result-highlight::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: translate(30%, -30%);
+        }
+
+        .emi-val { 
+            font-family: var(--font-heading);
+            font-size: 3rem; 
+            font-weight: 800; 
+            line-height: 1.1; 
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        
+        .emi-sub { 
+            font-size: 0.95rem; 
+            opacity: 0.8; 
+            font-weight: 500;
+        }
+
+        .savings-badge {
+            background: var(--success-bg);
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            display: none;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+        
+        .stat-num { 
+            font-size: 1.15rem; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            font-family: var(--font-heading);
+        }
+        
+        .stat-lbl { 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            margin-top: 4px; 
+            font-weight: 500;
+        }
+
+        /* --- Chart Area --- */
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-btn {
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+        }
+        
+        .chart-btn:hover { background: #e2e8f0; }
+        
+        .chart-btn.active { 
+            background: var(--text-main); 
+            color: white; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .canvas-container { height: 260px; position: relative; width: 100%; margin: 10px 0; }
+
+        /* --- Actions --- */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: var(--font-heading);
+        }
+
+        .btn-action:hover { transform: translateY(-2px); }
+
+        .btn-pdf { 
+            background: #fff; 
+            color: var(--text-main); 
+            border: 1px solid var(--border); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .btn-whatsapp { 
+            background: #25D366; 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); 
+        }
+
+        /* --- SEO Content Section --- */
+        .seo-content {
+            margin-top: 40px;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .seo-content h2 { 
+            font-family: var(--font-heading);
+            font-size: 1.75rem; 
+            margin-bottom: 24px; 
+            color: var(--text-main); 
+            font-weight: 700;
+        }
+        
+        .seo-content h3 { 
+            font-family: var(--font-heading);
+            font-size: 1.25rem; 
+            margin: 28px 0 12px; 
+            color: var(--primary-dark); 
+            font-weight: 600;
+        }
+        
+        .seo-content p, .seo-content li { 
+            color: var(--text-muted); 
+            margin-bottom: 16px; 
+            font-size: 1.05rem; 
+        }
+
+        /* --- Table --- */
+        .table-wrap {
+            margin-top: 40px;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
+        th { 
+            background: #f8fafc; 
+            padding: 16px; 
+            text-align: left; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            border-bottom: 2px solid var(--border);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); font-variant-numeric: tabular-nums; }
+        
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .calculator-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 2.25rem; }
+            .card { padding: 24px; }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .input-box-wrapper { padding: 8px 12px; }
+            .number-input { font-size: 1rem; }
+            .emi-val { font-size: 2.5rem; }
+            .action-buttons { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo-badge"><i class="fas fa-chart-line"></i> Smart FinTools India</div>
+        <h1>Home Loan Planner Pro</h1>
+        <p>Advanced EMI calculator with prepayment strategies. Calculate, Visualize, and Save.</p>
+    </header>
+
+    <div class="calculator-grid">
+        <!-- Controls -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-sliders-h"></i>
+                <h2>Loan Configuration</h2>
+            </div>
+
+            <!-- Loan Amount -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <label>Loan Amount</label>
+                    <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">Max: ₹10 Cr</span>
+                </div>
+                <div class="input-box-wrapper">
+                    <span class="currency-symbol">₹</span>
+                    <input type="text" id="amountText" class="number-input" value="50,00,000" inputmode="numeric" oninput="syncInputs('amount', this.value, 'text')">
+                </div>
+                <input type="range" id="amountRange" min="500000" max="100000000" step="50000" value="5000000" oninput="syncInputs('amount', this.value, 'range')">
+            </div>
+
+            <!-- Interest Rate -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <label>Interest Rate (% p.a)</label>
+                </div>
+                <div class="input-box-wrapper">
+                    <input type="number" id="rateText" class="number-input" value="8.5" step="0.1" inputmode="decimal" oninput="syncInputs('rate', this.value, 'text')">
+                    <span class="currency-symbol">%</span>
+                </div>
+                <input type="range" id="rateRange" min="5" max="20" step="0.1" value="8.5" oninput="syncInputs('rate', this.value, 'range')">
+            </div>
+
+            <!-- Tenure -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <label>Loan Tenure</label>
+                </div>
+                <div class="input-box-wrapper">
+                    <input type="number" id="tenureText" class="number-input" value="20" inputmode="numeric" oninput="syncInputs('tenure', this.value, 'text')">
+                    <span class="currency-symbol">Years</span>
+                </div>
+                <input type="range" id="tenureRange" min="1" max="30" step="1" value="20" oninput="syncInputs('tenure', this.value, 'range')">
+            </div>
+
+            <!-- Prepayment Module -->
+            <div class="prepayment-card">
+                <div class="toggle-trigger" onclick="togglePrepayment()">
+                    <span><i class="fas fa-bolt" style="margin-right: 8px; color: var(--primary);"></i> Prepayment Options</span>
+                    <i class="fas fa-chevron-down" id="toggleIcon" style="font-size: 0.9rem;"></i>
+                </div>
+                
+                <div class="toggle-content" id="prepaymentSection">
+                    <div style="margin: 20px 0;">
+                        <div class="strategy-selector">
+                            <div class="strategy-opt active" id="opt-tenure" onclick="setStrategy('tenure')">Reduce Tenure</div>
+                            <div class="strategy-opt" id="opt-emi" onclick="setStrategy('emi')">Reduce EMI</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Extra Payment Amount</label>
+                            <div class="input-box-wrapper" style="background: white;">
+                                <span class="currency-symbol">₹</span>
+                                <input type="text" id="prepayAmount" class="number-input" value="0" inputmode="numeric" oninput="formatAndCalculate(this)">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 5px;">Starts Year</label>
+                                <input type="number" id="prepayStart" class="number-input" style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 0.95rem; text-align: center;" value="1" min="1">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 5px;">Frequency</label>
+                                <select id="prepayFreq" onchange="calculate()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; font-family: inherit; color: var(--text-main);">
+                                    <option value="once">One Time</option>
+                                    <option value="yearly">Yearly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-chart-pie"></i>
+                <h2>Financial Breakdown</h2>
+            </div>
+
+            <div class="result-highlight">
+                <div class="emi-val" id="displayEMI">₹ 0</div>
+                <div class="emi-sub">Monthly EMI Amount</div>
+            </div>
+
+            <div class="savings-badge" id="savingsAlert">
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="background: white; padding: 6px; border-radius: 50%; color: var(--success);"><i class="fas fa-check"></i></div>
+                    <div>
+                        <strong style="color: #047857; font-family: var(--font-heading);">Smart Choice!</strong><br>
+                        You save <span id="saveAmount" style="font-weight: 700;">₹ 0</span> in interest and finish your loan <span id="saveYears" style="font-weight: 700;">0 years</span> earlier.
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-num" id="displayPrincipal">₹ 0</div>
+                    <div class="stat-lbl">Principal</div>
+                </div>
+                <div class="stat-card" style="background: var(--primary-light); border-color: rgba(37, 99, 235, 0.2);">
+                    <div class="stat-num" id="displayInterest" style="color: var(--primary);">₹ 0</div>
+                    <div class="stat-lbl">Total Interest</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="displayTotal">₹ 0</div>
+                    <div class="stat-lbl">Total Payment</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="displayTenure">0 Yrs</div>
+                    <div class="stat-lbl">Duration</div>
+                </div>
+            </div>
+
+            <div class="chart-controls">
+                <button class="chart-btn active" onclick="switchChart('breakdown', this)">Breakdown</button>
+                <button class="chart-btn" onclick="switchChart('timeline', this)">Timeline</button>
+            </div>
+
+            <div class="canvas-container" id="chart-breakdown">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+            <div class="canvas-container hidden" style="display: none;" id="chart-timeline">
+                <canvas id="lineChart"></canvas>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="action-buttons">
+                <button class="btn-action btn-pdf" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </button>
+                <button class="btn-action btn-whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Share Plan
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Amortization Table -->
+    <div class="table-wrap">
+        <div class="section-header" style="border: none; margin-bottom: 10px;">
+            <i class="fas fa-table"></i>
+            <h2>Yearly Amortization Schedule</h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Principal</th>
+                    <th>Interest</th>
+                    <th>Prepayment</th>
+                    <th>Balance</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody">
+                <!-- JS Populated -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SEO Content Section -->
+    <section class="seo-content">
+        <h2>Everything You Need to Know About Home Loans</h2>
+        
+        <h3>How to use this Home Loan EMI Calculator?</h3>
+        <p>This intelligent calculator allows Indian home buyers to not only calculate their monthly EMI but also plan their financial freedom. Simply enter your loan amount, interest rate, and tenure. The tool instantly computes your monthly outflow and total interest payable.</p>
+        
+        <h3>Why is Prepayment Important?</h3>
+        <p>Home loans usually span 20-30 years, and the interest component can often exceed the principal amount. By using the <strong>Prepayment Options</strong> in this calculator, you can see how making small extra payments (Monthly or Yearly) can drastically reduce your loan tenure and save lakhs in interest.</p>
+        
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Reduce Tenure vs Reduce EMI:</strong> Choose whether you want to become debt-free faster or reduce your monthly burden.</li>
+            <li><strong>Amortization Schedule:</strong> View a detailed yearly breakdown of how your money is split between Principal and Interest.</li>
+            <li><strong>Mobile Friendly:</strong> Designed to work perfectly on your smartphone for calculations on the go.</li>
+        </ul>
+
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <p><strong>Q: Is floating rate better than fixed rate?</strong><br>
+        A: In India, most home loans are floating rate. While they fluctuate, they are generally cheaper than fixed rates over the long term.</p>
+        
+        <p><strong>Q: Does prepayment attract a penalty?</strong><br>
+        A: As per RBI guidelines, there is no prepayment penalty on floating rate home loans for individuals.</p>
+    </section>
+
+    <footer style="text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 30px;">
+        <p style="font-weight: 600; color: var(--text-main); font-size: 1rem;">Created by Vivek Narkhede</p>
+        <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.8;">Disclaimer: This calculator is for illustrative purposes only. Actual loan terms, processing fees, and conditions may vary based on bank policies and market rates.</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">&copy; 2026 Smart FinTools. All rights reserved.</p>
+    </footer>
+
+</div>
+
+<script>
+    // --- State Management ---
+    const state = {
+        amount: 5000000,
+        rate: 8.5,
+        tenure: 20,
+        prepayAmount: 0,
+        prepayStart: 1,
+        prepayFreq: 'once',
+        strategy: 'tenure'
+    };
+
+    // Store calculated values for sharing/printing
+    const results = {
+        emi: 0,
+        totalInterest: 0,
+        totalPayment: 0,
+        savings: 0,
+        savedYears: 0,
+        tableData: []
+    };
+
+    let doughnutChartInstance = null;
+    let lineChartInstance = null;
+
+    // --- Formatters ---
+    const moneyFormatter = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+    });
+
+    const numFormatter = new Intl.NumberFormat('en-IN');
+
+    // --- Input Sync Logic ---
+    function syncInputs(field, value, source) {
+        let numericValue = typeof value === 'string' ? parseFloat(value.replace(/,/g, '')) : value;
+        if (isNaN(numericValue)) numericValue = 0;
+
+        // Visual feedback for range sliders
+        if (source === 'range' || source === 'text') {
+            const rangeInput = document.getElementById(field + 'Range');
+            if (rangeInput) {
+                const min = parseFloat(rangeInput.min);
+                const max = parseFloat(rangeInput.max);
+                const percentage = ((numericValue - min) / (max - min)) * 100;
+                // Updated slider gradient color
+                rangeInput.style.background = `linear-gradient(to right, var(--primary) ${percentage}%, #e2e8f0 ${percentage}%)`;
+            }
+        }
+
+        state[field] = numericValue;
+
+        if (field === 'amount') {
+            if (source === 'range') document.getElementById('amountText').value = numFormatter.format(numericValue);
+            if (source === 'text') document.getElementById('amountRange').value = numericValue;
+        } else if (field === 'rate') {
+            if (source === 'range') document.getElementById('rateText').value = numericValue;
+            if (source === 'text') document.getElementById('rateRange').value = numericValue;
+        } else if (field === 'tenure') {
+            if (source === 'range') document.getElementById('tenureText').value = numericValue;
+            if (source === 'text') document.getElementById('tenureRange').value = numericValue;
+        }
+
+        calculate();
+    }
+
+    function formatAndCalculate(input) {
+        const raw = input.value.replace(/,/g, '');
+        if(raw === '') {
+            state.prepayAmount = 0;
+            calculate();
+            return;
+        }
+        const val = parseFloat(raw);
+        if(!isNaN(val)) {
+            state.prepayAmount = val;
+            input.value = numFormatter.format(val);
+            calculate();
+        }
+    }
+
+    function togglePrepayment() {
+        const content = document.getElementById('prepaymentSection');
+        const icon = document.getElementById('toggleIcon');
+        if (content.style.display === 'block') {
+            content.style.display = 'none';
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            state.prepayAmount = 0;
+            document.getElementById('prepayAmount').value = 0;
+            calculate();
+        } else {
+            content.style.display = 'block';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
+    }
+
+    function setStrategy(strat) {
+        state.strategy = strat;
+        document.querySelectorAll('.strategy-opt').forEach(el => el.classList.remove('active'));
+        document.getElementById(`opt-${strat}`).classList.add('active');
+        calculate();
+    }
+
+    // --- Core Calculation Logic ---
+    function calculate() {
+        state.prepayStart = parseInt(document.getElementById('prepayStart').value) || 1;
+        state.prepayFreq = document.getElementById('prepayFreq').value;
+
+        const P = state.amount;
+        const R = state.rate / 12 / 100;
+        const N = state.tenure * 12;
+
+        if (P === 0 || state.rate === 0) return;
+
+        const baseEMI = Math.round((P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1));
+
+        let balance = P;
+        let totalInterest = 0;
+        let totalPaid = 0;
+        let monthsPassed = 0;
+        let yearData = [];
+        let chartDataBalance = [P];
+        
+        let yearlyPrincipal = 0;
+        let yearlyInterest = 0;
+        let yearlyPrepay = 0;
+
+        let originalTotalInterest = (baseEMI * N) - P;
+        let currentEMI = baseEMI;
+
+        while (balance > 10 && monthsPassed < 600) {
+            monthsPassed++;
+            let interestComponent = balance * R;
+            let principalComponent = currentEMI - interestComponent;
+            let prepayThisMonth = 0;
+
+            const currentYear = Math.ceil(monthsPassed / 12);
+            if (state.prepayAmount > 0 && currentYear >= state.prepayStart) {
+                let shouldPrepay = false;
+                if (state.prepayFreq === 'once' && monthsPassed === ((state.prepayStart - 1) * 12) + 1) shouldPrepay = true;
+                if (state.prepayFreq === 'yearly' && monthsPassed % 12 === 1) shouldPrepay = true;
+                if (state.prepayFreq === 'monthly') shouldPrepay = true;
+
+                if (shouldPrepay) {
+                    prepayThisMonth = state.prepayAmount;
+                    if(prepayThisMonth > balance - principalComponent) {
+                        prepayThisMonth = balance - principalComponent;
+                    }
+                }
+            }
+
+            if (balance < (principalComponent + prepayThisMonth)) {
+                principalComponent = balance - prepayThisMonth;
+            }
+
+            balance = balance - principalComponent - prepayThisMonth;
+            totalInterest += interestComponent;
+            totalPaid += (currentEMI + prepayThisMonth);
+
+            yearlyPrincipal += principalComponent;
+            yearlyInterest += interestComponent;
+            yearlyPrepay += prepayThisMonth;
+
+            if (monthsPassed % 12 === 0 || balance <= 10) {
+                yearData.push({
+                    year: Math.ceil(monthsPassed / 12),
+                    principal: yearlyPrincipal,
+                    interest: yearlyInterest,
+                    prepay: yearlyPrepay,
+                    balance: balance < 0 ? 0 : balance,
+                    paidPercent: ((P - balance) / P * 100).toFixed(1)
+                });
+                chartDataBalance.push(balance < 0 ? 0 : balance);
+                yearlyPrincipal = 0;
+                yearlyInterest = 0;
+                yearlyPrepay = 0;
+            }
+
+            if (state.strategy === 'emi' && prepayThisMonth > 0 && balance > 0) {
+                const remainingMonths = N - monthsPassed;
+                currentEMI = Math.round((balance * R * Math.pow(1 + R, remainingMonths)) / (Math.pow(1 + R, remainingMonths) - 1));
+            }
+        }
+
+        // Store Results
+        results.emi = baseEMI;
+        results.totalInterest = Math.round(totalInterest);
+        results.totalPayment = Math.round(P + totalInterest);
+        results.tableData = yearData;
+
+        document.getElementById('displayEMI').innerText = moneyFormatter.format(baseEMI);
+        document.getElementById('displayPrincipal').innerText = moneyFormatter.format(P);
+        document.getElementById('displayInterest').innerText = moneyFormatter.format(Math.round(totalInterest));
+        document.getElementById('displayTotal').innerText = moneyFormatter.format(Math.round(P + totalInterest));
+        
+        const yearsDecimal = (monthsPassed / 12).toFixed(1);
+        document.getElementById('displayTenure').innerText = `${yearsDecimal} Yrs`;
+
+        const savings = Math.round(originalTotalInterest - totalInterest);
+        results.savings = savings;
+        results.savedYears = (state.tenure - yearsDecimal).toFixed(1);
+
+        const savedAlert = document.getElementById('savingsAlert');
+        
+        if (savings > 1000) {
+            savedAlert.style.display = 'flex';
+            document.getElementById('saveAmount').innerText = moneyFormatter.format(savings);
+            document.getElementById('saveYears').innerText = results.savedYears + " years";
+        } else {
+            savedAlert.style.display = 'none';
+        }
+
+        updateCharts(P, totalInterest, chartDataBalance);
+        updateTable(yearData);
+    }
+
+    function updateCharts(principal, interest, balanceHistory) {
+        // Doughnut
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        if (doughnutChartInstance) doughnutChartInstance.destroy();
+
+        doughnutChartInstance = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Principal', 'Interest'],
+                datasets: [{
+                    data: [principal, interest],
+                    backgroundColor: ['#2563eb', '#93c5fd'], // Royal Blue & Light Blue
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            usePointStyle: true, 
+                            padding: 15, 
+                            font: {family: 'Inter', size: 12} 
+                        } 
+                    }
+                }
+            }
+        });
+
+        // Line
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        if (lineChartInstance) lineChartInstance.destroy();
+        const labels = balanceHistory.map((_, index) => `Year ${index}`);
+
+        lineChartInstance = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Balance',
+                    data: balanceHistory,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: {display: false} },
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { callback: function(value) { return value >= 100000 ? (value/100000).toFixed(0) + 'L' : value; } } 
+                    }
+                },
+                plugins: { legend: {display: false} }
+            }
+        });
+    }
+
+    function switchChart(type, btn) {
+        document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(type === 'breakdown') {
+            document.getElementById('chart-breakdown').style.display = 'block';
+            document.getElementById('chart-timeline').style.display = 'none';
+        } else {
+            document.getElementById('chart-breakdown').style.display = 'none';
+            document.getElementById('chart-timeline').style.display = 'block';
+        }
+    }
+
+    function updateTable(data) {
+        const tbody = document.getElementById('scheduleBody');
+        tbody.innerHTML = '';
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight:600">Year ${row.year}</td>
+                <td>${moneyFormatter.format(row.principal)}</td>
+                <td>${moneyFormatter.format(row.interest)}</td>
+                <td style="color:${row.prepay > 0 ? '#10b981' : 'inherit'}; font-weight:${row.prepay > 0 ? '600' : '400'}">
+                    ${row.prepay > 0 ? '+' : ''}${moneyFormatter.format(row.prepay)}
+                </td>
+                <td>${moneyFormatter.format(row.balance)}</td>
+                <td><div style="background:#e2e8f0; height:6px; width:60px; border-radius:3px; display:inline-block; margin-right:5px;"><div style="background:var(--primary); height:100%; width:${row.paidPercent}%; border-radius:3px;"></div></div> ${Math.round(row.paidPercent)}%</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- PDF Generation Logic ---
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // --- 1. Header Section ---
+        doc.setFillColor(37, 99, 235); // Primary Blue
+        doc.rect(0, 0, 210, 40, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.text("Home Loan Report", 15, 25);
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text("Generated by Smart Home Loan Planner Pro", 15, 33);
+        doc.text(new Date().toLocaleDateString(), 180, 25, null, null, "right");
+
+        // --- 2. Graphical Summary (Visual Bar) ---
+        const fmt = (val) => numFormatter.format(Math.round(val));
+        const principalPct = state.amount / results.totalPayment;
+        const interestPct = results.totalInterest / results.totalPayment;
+
+        const barX = 15, barY = 50, barW = 180, barH = 15;
+        doc.setFillColor(37, 99, 235);
+        doc.rect(barX, barY, barW * principalPct, barH, 'F');
+        doc.setFillColor(147, 197, 253); // Lighter blue
+        doc.rect(barX + (barW * principalPct), barY, barW * interestPct, barH, 'F');
+
+        doc.setTextColor(0,0,0);
+        doc.setFontSize(10);
+        doc.text(`Principal: ${Math.round(principalPct*100)}%`, 15, 70);
+        doc.text(`Interest: ${Math.round(interestPct*100)}%`, 195, 70, null, null, "right");
+
+        // --- 3. Summary Table ---
+        doc.autoTable({
+            startY: 75,
+            head: [['Parameter', 'Value', 'Parameter', 'Value']],
+            body: [
+                ['Loan Amount', `Rs. ${fmt(state.amount)}`, 'Monthly EMI', `Rs. ${fmt(results.emi)}`],
+                ['Interest Rate', `${state.rate}%`, 'Total Interest', `Rs. ${fmt(results.totalInterest)}`],
+                ['Tenure', `${state.tenure} Years`, 'Total Payment', `Rs. ${fmt(results.totalPayment)}`]
+            ],
+            theme: 'grid',
+            headStyles: { 
+                fillColor: [248, 250, 252], 
+                textColor: [15, 23, 42], 
+                fontStyle: 'bold',
+                lineWidth: 0.1,
+                lineColor: [226, 232, 240]
+            },
+            styles: { 
+                font: 'helvetica',
+                fontSize: 11, 
+                cellPadding: 6,
+                lineColor: [226, 232, 240],
+                lineWidth: 0.1,
+                textColor: [51, 65, 85]
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold' },
+                2: { fontStyle: 'bold' }
+            }
+        });
+
+        let currentY = doc.lastAutoTable.finalY + 15;
+
+        // --- 4. Savings Highlight ---
+        if(results.savings > 0) {
+            doc.setFillColor(236, 253, 245); // Success BG
+            doc.setDrawColor(16, 185, 129); // Success Border
+            doc.rect(15, currentY, 180, 25, 'FD');
+            
+            doc.setTextColor(6, 95, 70); // Success Text
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text("SMART SAVINGS UNLOCKED!", 105, currentY + 10, null, null, "center");
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.text(`You are saving Rs. ${fmt(results.savings)} and finishing ${results.savedYears} years early!`, 105, currentY + 18, null, null, "center");
+            
+            currentY += 35;
+        }
+
+        // --- 5. Amortization Schedule ---
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(15, 23, 42);
+        doc.text("Yearly Amortization Schedule", 15, currentY);
+
+        const tableBody = results.tableData.map(row => [
+            row.year,
+            fmt(row.principal),
+            fmt(row.interest),
+            row.prepay > 0 ? `+ ${fmt(row.prepay)}` : '-',
+            fmt(row.balance)
+        ]);
+
+        doc.autoTable({
+            startY: currentY + 5,
+            head: [['Year', 'Principal Paid', 'Interest Paid', 'Prepayment', 'Balance Remaining']],
+            body: tableBody,
+            theme: 'striped',
+            headStyles: { fillColor: [37, 99, 235] },
+            styles: { fontSize: 10, cellPadding: 4, halign: 'center' },
+            columnStyles: { 0: { fontStyle: 'bold' } }
+        });
+
+        const pageCount = doc.internal.getNumberOfPages();
+        for(let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text('Smart Home Loan Planner - Created by Vivek Narkhede', 105, 290, null, null, "center");
+        }
+
+        doc.save("Home_Loan_Report.pdf");
+    }
+
+    // --- WhatsApp Sharing Logic ---
+    function shareToWhatsApp() {
+        const cleanVal = (val) => moneyFormatter.format(Math.round(val)).replace(/\u00A0/g, ' ').replace(/₹/g, 'Rs. ');
+
+        let msg = `*Home Loan Plan* 🏠\n`;
+        msg += `------------------\n`;
+        msg += `Loan: *${cleanVal(state.amount)}*\n`;
+        msg += `Rate: *${state.rate}%*\n`;
+        msg += `Tenure: *${state.tenure} Years*\n\n`;
+        
+        msg += `*Monthly EMI: ${cleanVal(results.emi)}* 💵\n`;
+        msg += `Total Interest: ${cleanVal(results.totalInterest)}\n`;
+        msg += `Total Payment: ${cleanVal(results.totalPayment)}\n`;
+        
+        if (results.savings > 0) {
+            msg += `\n*SMART SAVINGS* 🎯\n`;
+            msg += `✅ Saved: ${cleanVal(results.savings)}\n`;
+            msg += `✅ Time Saved: ${results.savedYears} Years\n`;
+        }
+        
+        msg += `\nCheck it here: https://viveknarkhede.github.io/`; 
+
+        const encodedMsg = encodeURIComponent(msg);
+        window.open(`https://wa.me/?text=${encodedMsg}`, '_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ['amount', 'rate', 'tenure'].forEach(id => syncInputs(id, state[id], 'init'));
+        calculate();
+    });
+
+</script>
+</body>
+</html>
