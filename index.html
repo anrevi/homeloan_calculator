@@ -148,8 +148,14 @@
         .section-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between; /* Adjusted for toggle */
             margin-bottom: 30px;
+        }
+
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .section-header i { 
@@ -177,6 +183,60 @@
             font-weight: 600; 
             color: var(--text-main); 
             font-size: 0.95rem; 
+        }
+
+        /* Tenure Toggle */
+        .tenure-switch {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: 6px;
+            padding: 2px;
+        }
+        
+        .t-btn {
+            border: none;
+            background: transparent;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        
+        .t-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Schedule Toggle */
+        .schedule-switch {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 5px;
+        }
+        
+        .s-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-family: var(--font-body);
+        }
+        
+        .s-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .input-box-wrapper {
@@ -496,6 +556,8 @@
             .calculator-grid { grid-template-columns: 1fr; }
             header h1 { font-size: 2.25rem; }
             .card { padding: 24px; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .section-header-left { width: 100%; }
         }
         
         @media (max-width: 480px) {
@@ -521,8 +583,10 @@
         <!-- Controls -->
         <div class="card">
             <div class="section-header">
-                <i class="fas fa-sliders-h"></i>
-                <h2>Loan Configuration</h2>
+                <div class="section-header-left">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>Loan Configuration</h2>
+                </div>
             </div>
 
             <!-- Loan Amount -->
@@ -550,14 +614,18 @@
                 <input type="range" id="rateRange" min="5" max="20" step="0.1" value="8.5" oninput="syncInputs('rate', this.value, 'range')">
             </div>
 
-            <!-- Tenure -->
+            <!-- Tenure (Updated with Year/Month Toggle) -->
             <div class="input-group">
                 <div class="input-label-row">
                     <label>Loan Tenure</label>
+                    <div class="tenure-switch">
+                         <button class="t-btn active" id="btn-year" onclick="toggleTenureUnit('years')">Yr</button>
+                         <button class="t-btn" id="btn-month" onclick="toggleTenureUnit('months')">Mo</button>
+                    </div>
                 </div>
                 <div class="input-box-wrapper">
                     <input type="number" id="tenureText" class="number-input" value="20" inputmode="numeric" oninput="syncInputs('tenure', this.value, 'text')">
-                    <span class="currency-symbol">Years</span>
+                    <span class="currency-symbol" id="tenureUnitLabel">Years</span>
                 </div>
                 <input type="range" id="tenureRange" min="1" max="30" step="1" value="20" oninput="syncInputs('tenure', this.value, 'range')">
             </div>
@@ -606,8 +674,10 @@
         <!-- Results -->
         <div class="card">
             <div class="section-header">
-                <i class="fas fa-chart-pie"></i>
-                <h2>Financial Breakdown</h2>
+                <div class="section-header-left">
+                    <i class="fas fa-chart-pie"></i>
+                    <h2>Financial Breakdown</h2>
+                </div>
             </div>
 
             <div class="result-highlight">
@@ -671,14 +741,20 @@
 
     <!-- Amortization Table -->
     <div class="table-wrap">
-        <div class="section-header" style="border: none; margin-bottom: 10px;">
-            <i class="fas fa-table"></i>
-            <h2>Yearly Amortization Schedule</h2>
+        <div class="section-header">
+            <div class="section-header-left">
+                <i class="fas fa-table"></i>
+                <h2>Amortization Schedule</h2>
+            </div>
+            <div class="schedule-switch">
+                <button class="s-btn active" id="view-yearly" onclick="toggleSchedule('yearly')">Yearly</button>
+                <button class="s-btn" id="view-monthly" onclick="toggleSchedule('monthly')">Monthly</button>
+            </div>
         </div>
         <table>
             <thead>
                 <tr>
-                    <th>Year</th>
+                    <th id="period-header">Year</th>
                     <th>Principal</th>
                     <th>Interest</th>
                     <th>Prepayment</th>
@@ -731,10 +807,12 @@
         amount: 5000000,
         rate: 8.5,
         tenure: 20,
+        tenureUnit: 'years',
         prepayAmount: 0,
         prepayStart: 1,
         prepayFreq: 'once',
-        strategy: 'tenure'
+        strategy: 'tenure',
+        scheduleView: 'yearly' // yearly | monthly
     };
 
     // Store calculated values for sharing/printing
@@ -744,7 +822,8 @@
         totalPayment: 0,
         savings: 0,
         savedYears: 0,
-        tableData: []
+        tableData: [],   // Yearly Data
+        monthlyData: []  // Monthly Data
     };
 
     let doughnutChartInstance = null;
@@ -759,19 +838,57 @@
 
     const numFormatter = new Intl.NumberFormat('en-IN');
 
+    // --- Tenure Toggle Logic ---
+    function toggleTenureUnit(unit) {
+        if(state.tenureUnit === unit) return;
+        
+        state.tenureUnit = unit;
+        document.getElementById('btn-year').classList.toggle('active');
+        document.getElementById('btn-month').classList.toggle('active');
+        
+        let currentVal = parseFloat(document.getElementById('tenureText').value) || 0;
+        let newVal;
+        const rangeInput = document.getElementById('tenureRange');
+        
+        if(unit === 'months') {
+            newVal = Math.round(currentVal * 12);
+            document.getElementById('tenureUnitLabel').innerText = 'Months';
+            rangeInput.min = 6; rangeInput.max = 360; rangeInput.step = 1;
+        } else {
+            newVal = parseFloat((currentVal / 12).toFixed(1));
+            document.getElementById('tenureUnitLabel').innerText = 'Years';
+            rangeInput.min = 1; rangeInput.max = 30; rangeInput.step = 1;
+        }
+        
+        state.tenure = newVal;
+        document.getElementById('tenureText').value = newVal;
+        rangeInput.value = newVal;
+        syncInputs('tenure', newVal, 'text');
+    }
+
+    // --- Schedule Toggle Logic ---
+    function toggleSchedule(mode) {
+        if(state.scheduleView === mode) return;
+        state.scheduleView = mode;
+        
+        document.getElementById('view-yearly').classList.toggle('active');
+        document.getElementById('view-monthly').classList.toggle('active');
+        document.getElementById('period-header').innerText = mode === 'yearly' ? 'Year' : 'Month';
+        
+        updateTable(mode === 'yearly' ? results.tableData : results.monthlyData);
+    }
+
     // --- Input Sync Logic ---
     function syncInputs(field, value, source) {
         let numericValue = typeof value === 'string' ? parseFloat(value.replace(/,/g, '')) : value;
         if (isNaN(numericValue)) numericValue = 0;
 
-        // Visual feedback for range sliders
         if (source === 'range' || source === 'text') {
             const rangeInput = document.getElementById(field + 'Range');
             if (rangeInput) {
                 const min = parseFloat(rangeInput.min);
                 const max = parseFloat(rangeInput.max);
                 const percentage = ((numericValue - min) / (max - min)) * 100;
-                // Updated slider gradient color
                 rangeInput.style.background = `linear-gradient(to right, var(--primary) ${percentage}%, #e2e8f0 ${percentage}%)`;
             }
         }
@@ -838,9 +955,15 @@
 
         const P = state.amount;
         const R = state.rate / 12 / 100;
-        const N = state.tenure * 12;
+        
+        let N;
+        if (state.tenureUnit === 'months') {
+             N = Math.round(state.tenure); 
+        } else {
+             N = Math.round(state.tenure * 12); 
+        }
 
-        if (P === 0 || state.rate === 0) return;
+        if (P === 0 || state.rate === 0 || N === 0) return;
 
         const baseEMI = Math.round((P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1));
 
@@ -849,6 +972,7 @@
         let totalPaid = 0;
         let monthsPassed = 0;
         let yearData = [];
+        let monthlyData = []; // New Monthly Data Array
         let chartDataBalance = [P];
         
         let yearlyPrincipal = 0;
@@ -891,6 +1015,17 @@
             yearlyInterest += interestComponent;
             yearlyPrepay += prepayThisMonth;
 
+            // Push Monthly Data
+            monthlyData.push({
+                year: monthsPassed, // Actually "Month Number"
+                principal: principalComponent,
+                interest: interestComponent,
+                prepay: prepayThisMonth,
+                balance: balance < 0 ? 0 : balance,
+                paidPercent: ((P - balance) / P * 100).toFixed(1)
+            });
+
+            // Push Yearly Data
             if (monthsPassed % 12 === 0 || balance <= 10) {
                 yearData.push({
                     year: Math.ceil(monthsPassed / 12),
@@ -917,6 +1052,7 @@
         results.totalInterest = Math.round(totalInterest);
         results.totalPayment = Math.round(P + totalInterest);
         results.tableData = yearData;
+        results.monthlyData = monthlyData;
 
         document.getElementById('displayEMI').innerText = moneyFormatter.format(baseEMI);
         document.getElementById('displayPrincipal').innerText = moneyFormatter.format(P);
@@ -928,7 +1064,10 @@
 
         const savings = Math.round(originalTotalInterest - totalInterest);
         results.savings = savings;
-        results.savedYears = (state.tenure - yearsDecimal).toFixed(1);
+        
+        const originalYears = N / 12;
+        const actualYears = monthsPassed / 12;
+        results.savedYears = (originalYears - actualYears).toFixed(1);
 
         const savedAlert = document.getElementById('savingsAlert');
         
@@ -941,7 +1080,9 @@
         }
 
         updateCharts(P, totalInterest, chartDataBalance);
-        updateTable(yearData);
+        
+        // Update Table based on current view
+        updateTable(state.scheduleView === 'yearly' ? yearData : monthlyData);
     }
 
     function updateCharts(principal, interest, balanceHistory) {
@@ -955,7 +1096,7 @@
                 labels: ['Principal', 'Interest'],
                 datasets: [{
                     data: [principal, interest],
-                    backgroundColor: ['#2563eb', '#93c5fd'], // Royal Blue & Light Blue
+                    backgroundColor: ['#2563eb', '#93c5fd'],
                     borderWidth: 2,
                     borderColor: '#ffffff',
                     hoverOffset: 4
@@ -965,14 +1106,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { 
-                        position: 'bottom', 
-                        labels: { 
-                            usePointStyle: true, 
-                            padding: 15, 
-                            font: {family: 'Inter', size: 12} 
-                        } 
-                    }
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15, font: {family: 'Inter', size: 12} } }
                 }
             }
         });
@@ -1027,10 +1161,14 @@
     function updateTable(data) {
         const tbody = document.getElementById('scheduleBody');
         tbody.innerHTML = '';
+        
+        // Performance optimization: limit rendering if data is huge, but 360 rows is generally fine.
+        // We will render all.
         data.forEach(row => {
             const tr = document.createElement('tr');
+            const label = state.scheduleView === 'yearly' ? `Year ${row.year}` : `Month ${row.year}`;
             tr.innerHTML = `
-                <td style="font-weight:600">Year ${row.year}</td>
+                <td style="font-weight:600">${label}</td>
                 <td>${moneyFormatter.format(row.principal)}</td>
                 <td>${moneyFormatter.format(row.interest)}</td>
                 <td style="color:${row.prepay > 0 ? '#10b981' : 'inherit'}; font-weight:${row.prepay > 0 ? '600' : '400'}">
@@ -1085,7 +1223,7 @@
             body: [
                 ['Loan Amount', `Rs. ${fmt(state.amount)}`, 'Monthly EMI', `Rs. ${fmt(results.emi)}`],
                 ['Interest Rate', `${state.rate}%`, 'Total Interest', `Rs. ${fmt(results.totalInterest)}`],
-                ['Tenure', `${state.tenure} Years`, 'Total Payment', `Rs. ${fmt(results.totalPayment)}`]
+                ['Tenure', `${state.tenure} ${state.tenureUnit === 'months' ? 'Months' : 'Years'}`, 'Total Payment', `Rs. ${fmt(results.totalPayment)}`]
             ],
             theme: 'grid',
             headStyles: { 
@@ -1133,10 +1271,15 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(14);
         doc.setTextColor(15, 23, 42);
-        doc.text("Yearly Amortization Schedule", 15, currentY);
+        
+        // Dynamic Label based on Selection
+        const scheduleLabel = state.scheduleView === 'yearly' ? 'Yearly' : 'Monthly';
+        doc.text(`${scheduleLabel} Amortization Schedule`, 15, currentY);
 
-        const tableBody = results.tableData.map(row => [
-            row.year,
+        // Select Data based on view
+        const dataToPrint = state.scheduleView === 'yearly' ? results.tableData : results.monthlyData;
+        const tableBody = dataToPrint.map(row => [
+            state.scheduleView === 'yearly' ? row.year : row.year, // Month Number
             fmt(row.principal),
             fmt(row.interest),
             row.prepay > 0 ? `+ ${fmt(row.prepay)}` : '-',
@@ -1145,11 +1288,11 @@
 
         doc.autoTable({
             startY: currentY + 5,
-            head: [['Year', 'Principal Paid', 'Interest Paid', 'Prepayment', 'Balance Remaining']],
+            head: [[state.scheduleView === 'yearly' ? 'Year' : 'Month', 'Principal Paid', 'Interest Paid', 'Prepayment', 'Balance Remaining']],
             body: tableBody,
             theme: 'striped',
             headStyles: { fillColor: [37, 99, 235] },
-            styles: { fontSize: 10, cellPadding: 4, halign: 'center' },
+            styles: { fontSize: 9, cellPadding: 3, halign: 'center' },
             columnStyles: { 0: { fontStyle: 'bold' } }
         });
 
@@ -1161,7 +1304,7 @@
             doc.text('Smart Home Loan Planner - Created by Vivek Narkhede', 105, 290, null, null, "center");
         }
 
-        doc.save("Home_Loan_Report.pdf");
+        doc.save(`Home_Loan_Report_${scheduleLabel}.pdf`);
     }
 
     // --- WhatsApp Sharing Logic ---
@@ -1172,7 +1315,7 @@
         msg += `------------------\n`;
         msg += `Loan: *${cleanVal(state.amount)}*\n`;
         msg += `Rate: *${state.rate}%*\n`;
-        msg += `Tenure: *${state.tenure} Years*\n\n`;
+        msg += `Tenure: *${state.tenure} ${state.tenureUnit === 'months' ? 'Months' : 'Years'}*\n\n`;
         
         msg += `*Monthly EMI: ${cleanVal(results.emi)}* 💵\n`;
         msg += `Total Interest: ${cleanVal(results.totalInterest)}\n`;
